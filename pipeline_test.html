@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Basic Synth Pipeline Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            color: #333;
+            border-bottom: 2px solid #007acc;
+            padding-bottom: 10px;
+        }
+        
+        .step {
+            background: #f9f9f9;
+            border-left: 4px solid #007acc;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        
+        .step h3 {
+            margin-top: 0;
+            color: #333;
+        }
+        
+        .code-block {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 15px;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            overflow-x: auto;
+            margin: 10px 0;
+        }
+        
+        .command {
+            background: #1a202c;
+            color: #68d391;
+            padding: 10px;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            margin: 5px 0;
+        }
+        
+        .warning {
+            background: #fed7d7;
+            border-left: 4px solid #e53e3e;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 5px;
+        }
+        
+        .success {
+            background: #c6f6d5;
+            border-left: 4px solid #38a169;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 5px;
+        }
+        
+        .file-list {
+            background: #edf2f7;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        
+        .file-list ul {
+            margin: 0;
+            padding-left: 20px;
+        }
+        
+        button {
+            background: #007acc;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 5px;
+        }
+        
+        button:hover {
+            background: #005a9e;
+        }
+        
+        .status {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+        
+        .status.pending {
+            background: #ffd6cc;
+            color: #c53030;
+        }
+        
+        .status.running {
+            background: #bee3f8;
+            color: #2b6cb0;
+        }
+        
+        .status.complete {
+            background: #c6f6d5;
+            color: #276749;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎹 Sample-to-Synthesis Pipeline Test</h1>
+        
+        <p>This is a basic interface to test if your ML pipeline is working. Follow the steps below to verify each component.</p>
+        
+        <div class="warning">
+            <strong>⚠️ Prerequisites:</strong> Make sure you have all Python dependencies installed and your files are in the correct structure.
+        </div>
+        
+        <!-- Step 1: Check Files -->
+        <div class="step">
+            <h3>📁 Step 1: Verify File Structure</h3>
+            <p>Make sure you have all these files in your project directory:</p>
+            <div class="file-list">
+                <ul>
+                    <li>basic_synth.py</li>
+                    <li>training_data_generation.py</li>
+                    <li>audio_feature_extractor.py</li>
+                    <li>model.py</li>
+                    <li>inference.py</li>
+                </ul>
+            </div>
+            <div id="fileCheck" class="status pending">Click "Check Files" to verify</div>
+            <button onclick="checkFiles()">Check Files</button>
+        </div>
+
+        <!-- Step 2: Generate Training Data -->
+        <div class="step">
+            <h3>🎵 Step 2: Generate Training Data</h3>
+            <p>Generate synthetic audio samples with known parameters:</p>
+            <div class="command">python training_data_generation.py</div>
+            <p>This will create a <code>synth_training_data/</code> folder with audio files and metadata.</p>
+            <div id="trainingStatus" class="status pending">Run the command above</div>
+            <button onclick="checkTrainingData()">Check Training Data</button>
+        </div>
+
+        <!-- Step 3: Extract Features -->
+        <div class="step">
+            <h3>🔍 Step 3: Extract Audio Features</h3>
+            <p>Extract features from the generated audio samples:</p>
+            <div class="command">python audio_feature_extractor.py</div>
+            <p>This will create <code>features.csv</code> in the training data folder.</p>
+            <div id="featuresStatus" class="status pending">Run the command above</div>
+            <button onclick="checkFeatures()">Check Features</button>
+        </div>
+
+        <!-- Step 4: Train Models -->
+        <div class="step">
+            <h3>🤖 Step 4: Train ML Models</h3>
+            <p>Train machine learning models to predict synth parameters:</p>
+            <div class="command">python model.py</div>
+            <p>This will create a <code>trained_models/</code> folder with saved models.</p>
+            <div id="modelStatus" class="status pending">Run the command above</div>
+            <button onclick="checkModels()">Check Models</button>
+        </div>
+
+        <!-- Step 5: Test Inference -->
+        <div class="step">
+            <h3>🎯 Step 5: Test Inference</h3>
+            <p>Test the complete pipeline with inference:</p>
+            
+            <h4>Option A: Test with training samples</h4>
+            <div class="command">python inference.py --test_training</div>
+            
+            <h4>Option B: Test with a specific audio file</h4>
+            <div class="command">python inference.py --audio "path/to/your/audio.wav"</div>
+            
+            <div id="inferenceStatus" class="status pending">Run one of the commands above</div>
+            <button onclick="runBasicTest()">Run Basic Test</button>
+        </div>
+
+        <!-- Results Section -->
+        <div class="step">
+            <h3>📊 Expected Results</h3>
+            <p>If everything works correctly, you should see:</p>
+            <ul>
+                <li>✅ Models load successfully</li>
+                <li>✅ Audio features are extracted</li>
+                <li>✅ Parameters are predicted</li>
+                <li>✅ Comparison plots are generated</li>
+                <li>✅ Synthesized audio is created</li>
+            </ul>
+            
+            <div class="success">
+                <strong>Success indicators:</strong>
+                <ul>
+                    <li>No error messages during execution</li>
+                    <li>Predicted parameters seem reasonable</li>
+                    <li>Generated audio sounds somewhat similar to input</li>
+                    <li>Files are saved in the output directory</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Troubleshooting -->
+        <div class="step">
+            <h3>🛠️ Common Issues & Solutions</h3>
+            
+            <h4>Models not found:</h4>
+            <p>Make sure you've run steps 2-4 successfully first.</p>
+            
+            <h4>Audio loading errors:</h4>
+            <p>Install required audio libraries:</p>
+            <div class="command">pip install librosa soundfile</div>
+            
+            <h4>Feature extraction fails:</h4>
+            <p>Check that your audio files are valid and not corrupted.</p>
+            
+            <h4>Low accuracy predictions:</h4>
+            <p>This is normal for a first test. You may need:</p>
+            <ul>
+                <li>More training data (10,000+ samples)</li>
+                <li>Better feature engineering</li>
+                <li>Hyperparameter tuning</li>
+            </ul>
+        </div>
+
+        <!-- Quick Commands Section -->
+        <div class="step">
+            <h3>⚡ Quick Test Commands</h3>
+            <p>Copy and paste these commands to run the full pipeline:</p>
+            
+            <div class="code-block">
+# Generate training data (5000 samples)
+python training_data_generation.py
+
+# Extract features
+python audio_feature_extractor.py
+
+# Train models  
+python model.py
+
+# Test inference
+python inference.py --test_training
+            </div>
+            
+            <button onclick="copyCommands()">📋 Copy Commands</button>
+        </div>
+    </div>
+
+    <script>
+        function checkFiles() {
+            const status = document.getElementById('fileCheck');
+            status.className = 'status running';
+            status.textContent = 'Checking files... (This is simulated - check manually)';
+            
+            setTimeout(() => {
+                status.className = 'status complete';
+                status.textContent = '✅ Please verify files manually in your project directory';
+            }, 1000);
+        }
+
+        function checkTrainingData() {
+            const status = document.getElementById('trainingStatus');
+            status.className = 'status running';
+            status.textContent = 'Checking for training data...';
+            
+            setTimeout(() => {
+                status.className = 'status complete';
+                status.textContent = '✅ Check for synth_training_data/ folder and audio files';
+            }, 1000);
+        }
+
+        function checkFeatures() {
+            const status = document.getElementById('featuresStatus');
+            status.className = 'status running';
+            status.textContent = 'Checking for features...';
+            
+            setTimeout(() => {
+                status.className = 'status complete';
+                status.textContent = '✅ Check for synth_training_data/features.csv';
+            }, 1000);
+        }
+
+        function checkModels() {
+            const status = document.getElementById('modelStatus');
+            status.className = 'status running';
+            status.textContent = 'Checking for trained models...';
+            
+            setTimeout(() => {
+                status.className = 'status complete';
+                status.textContent = '✅ Check for trained_models/ folder with .pkl files';
+            }, 1000);
+        }
+
+        function runBasicTest() {
+            const status = document.getElementById('inferenceStatus');
+            status.className = 'status running';
+            status.textContent = 'This will test the inference - run the Python command manually';
+            
+            setTimeout(() => {
+                status.className = 'status complete';
+                status.textContent = '✅ Run the inference command in your terminal';
+            }, 1000);
+        }
+
+        function copyCommands() {
+            const commands = `# Generate training data (5000 samples)
+python training_data_generation.py
+
+# Extract features
+python audio_feature_extractor.py
+
+# Train models  
+python model.py
+
+# Test inference
+python inference.py --test_training`;
+
+            navigator.clipboard.writeText(commands).then(() => {
+                alert('Commands copied to clipboard!');
+            });
+        }
+
+        // Auto-check if we're running locally
+        if (window.location.protocol === 'file:') {
+            document.body.insertAdjacentHTML('afterbegin', 
+                '<div style="background: #bee3f8; padding: 15px; margin-bottom: 20px; border-radius: 5px;">' +
+                '<strong>💡 Running locally:</strong> This interface is for guidance only. ' +
+                'Run the Python commands in your terminal to test the actual pipeline.' +
+                '</div>'
+            );
+        }
+    </script>
+</body>
+</html>

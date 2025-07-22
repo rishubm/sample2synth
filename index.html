@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sample to Synthesis</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="app-header">
+            <div class="header-content">
+                <h1>🎹 Sample to Synthesis</h1>
+                <p>Analyze audio samples and generate matching synthesizer parameters</p>
+            </div>
+            <div class="header-controls">
+                <button id="setupBtn" class="btn btn-secondary">Check Setup</button>
+                <button id="trainBtn" class="btn btn-secondary">Train Models</button>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Left Panel: File Input -->
+            <div class="panel input-panel">
+                <h2>📁 Audio Input</h2>
+                
+                <!-- File Drop Zone -->
+                <div class="drop-zone" id="dropZone">
+                    <div class="drop-zone-content">
+                        <div class="upload-icon">🎵</div>
+                        <p class="drop-text">Drop audio file here</p>
+                        <p class="drop-subtext">or click to browse</p>
+                        <button class="btn btn-primary" id="selectFileBtn">Select Audio File</button>
+                    </div>
+                </div>
+
+                <!-- File Info -->
+                <div class="file-info" id="fileInfo" style="display: none;">
+                    <h3>Selected File:</h3>
+                    <p id="fileName"></p>
+                    <audio controls id="audioPreview" style="width: 100%; margin-top: 10px;"></audio>
+                </div>
+
+                <!-- Analysis Controls -->
+                <div class="analysis-controls" id="analysisControls" style="display: none;">
+                    <button class="btn btn-large btn-primary" id="analyzeBtn">
+                        🔍 Analyze Sample
+                    </button>
+                </div>
+
+                <!-- Progress -->
+                <div class="progress-section" id="progressSection" style="display: none;">
+                    <h3>Analysis Progress</h3>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressFill"></div>
+                    </div>
+                    <div class="progress-text" id="progressText">Initializing...</div>
+                    <div class="progress-output" id="progressOutput"></div>
+                </div>
+            </div>
+
+            <!-- Right Panel: Results -->
+            <div class="panel results-panel">
+                <h2>📊 Predicted Parameters</h2>
+                
+                <!-- Status -->
+                <div class="status-section" id="statusSection">
+                    <div class="status-item">
+                        <span class="status-label">Ready to analyze audio files</span>
+                    </div>
+                </div>
+
+                <!-- Results -->
+                <div class="results-content" id="resultsContent" style="display: none;">
+                    <!-- Oscillator -->
+                    <div class="param-group">
+                        <h3>🌊 Oscillator</h3>
+                        <div class="param-item">
+                            <label>Waveform Type:</label>
+                            <span class="param-value" id="oscType">-</span>
+                        </div>
+                    </div>
+
+                    <!-- Filter -->
+                    <div class="param-group">
+                        <h3>🎛️ Filter</h3>
+                        <div class="param-item">
+                            <label>Type:</label>
+                            <span class="param-value" id="filterType">-</span>
+                        </div>
+                        <div class="param-item">
+                            <label>Cutoff:</label>
+                            <span class="param-value" id="filterCutoff">-</span>
+                        </div>
+                        <div class="param-item">
+                            <label>Resonance:</label>
+                            <span class="param-value" id="filterResonance">-</span>
+                        </div>
+                    </div>
+
+                    <!-- Envelope -->
+                    <div class="param-group">
+                        <h3>📈 Envelope (ADSR)</h3>
+                        <div class="param-item">
+                            <label>Attack:</label>
+                            <span class="param-value" id="attack">-</span>
+                        </div>
+                        <div class="param-item">
+                            <label>Decay:</label>
+                            <span class="param-value" id="decay">-</span>
+                        </div>
+                        <div class="param-item">
+                            <label>Sustain:</label>
+                            <span class="param-value" id="sustain">-</span>
+                        </div>
+                        <div class="param-item">
+                            <label>Release:</label>
+                            <span class="param-value" id="release">-</span>
+                        </div>
+                    </div>
+
+                    <!-- General -->
+                    <div class="param-group">
+                        <h3>🎚️ General</h3>
+                        <div class="param-item">
+                            <label>Amplitude:</label>
+                            <span class="param-value" id="amplitude">-</span>
+                        </div>
+                    </div>
+
+                    <!-- Actions -->
+                    <div class="results-actions">
+                        <button class="btn btn-secondary" id="copyParamsBtn">📋 Copy JSON</button>
+                        <button class="btn btn-secondary" id="playSynthBtn" style="display: none;">▶️ Play Synth</button>
+                        <button class="btn btn-secondary" id="openOutputBtn" style="display: none;">📂 Open Output</button>
+                    </div>
+
+                    <!-- Synthesized Audio -->
+                    <div class="synth-audio" id="synthAudio" style="display: none;">
+                        <h3>🎹 Synthesized Audio</h3>
+                        <audio controls id="synthAudioPlayer" style="width: 100%;"></audio>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Footer/Status Bar -->
+        <footer class="app-footer">
+            <div class="footer-content">
+                <span id="statusText">Ready</span>
+                <span class="footer-right" id="systemStatus">System OK</span>
+            </div>
+        </footer>
+
+        <!-- Training Modal -->
+        <div class="modal-overlay" id="trainingModal" style="display: none;">
+            <div class="modal">
+                <div class="modal-header">
+                    <h2>🤖 Training Pipeline</h2>
+                    <button class="modal-close" id="closeTrainingModal">&times;</button>
+                </div>
+                <div class="modal-content">
+                    <p>This will run the complete training pipeline:</p>
+                    <ol>
+                        <li>Generate synthetic training data</li>
+                        <li>Extract audio features</li>
+                        <li>Train machine learning models</li>
+                    </ol>
+                    <p><strong>This may take 10-30 minutes depending on your system.</strong></p>
+                    
+                    <div class="training-progress" id="trainingProgress" style="display: none;">
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="trainingProgressFill"></div>
+                        </div>
+                        <div class="progress-text" id="trainingProgressText">Starting...</div>
+                        <div class="training-output" id="trainingOutput"></div>
+                    </div>
+                </div>
+                <div class="modal-actions">
+                    <button class="btn btn-secondary" id="cancelTrainingBtn">Cancel</button>
+                    <button class="btn btn-primary" id="startTrainingBtn">Start Training</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Setup Modal -->
+        <div class="modal-overlay" id="setupModal" style="display: none;">
+            <div class="modal">
+                <div class="modal-header">
+                    <h2>⚙️ System Setup</h2>
+                    <button class="modal-close" id="closeSetupModal">&times;</button>
+                </div>
+                <div class="modal-content">
+                    <div id="setupResults">
+                        <p>Checking system requirements...</p>
+                    </div>
+                </div>
+                <div class="modal-actions">
+                    <button class="btn btn-secondary" id="recheckSetupBtn">Recheck</button>
+                    <button class="btn btn-primary" id="closeSetupBtn">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="renderer.js"></script>
+</body>
+</html>
