@@ -3,6 +3,9 @@
 
 Sample2Synth is a tool that analyzes short audio samples and predicts synthesizer parameters to recreate similar sounds using a virtual analog synth engine.
 
+## Overview
+<img width="950" height="650" alt="routing" src="https://github.com/user-attachments/assets/fc8c4bf4-66c9-4b81-8ece-c53d525369f0" />
+
 ## What is it for?
 - Quickly reverse-engineer the sound design of short audio clips (e.g., single notes, synth stabs)
 - Learn how to recreate sounds using subtractive synthesis
@@ -24,6 +27,7 @@ Sample2Synth is a tool that analyzes short audio samples and predicts synthesize
 
 ## Demo
 https://github.com/user-attachments/assets/68b2f3e4-8955-4767-b525-56797e3fef46
+
 
 ### Audio Analysis
 The system uses digital signal processing to extract meaningful features from the input audio (using librosa, a popular python package for audio analysis). This includes pitch (fundamental frequency), spectral characteristics, envelope shapes, and other descriptors that capture the timbre and dynamics of the sound. These features are the input for the machine learning models.
