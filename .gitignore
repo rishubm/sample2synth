@@ -1,6 +1,2 @@
 # Created by venv; see https://docs.python.org/3/library/venv.html
-node_modules/
-electron_output/
-__pycache__/
-lib/
-synth_training_data/
+*

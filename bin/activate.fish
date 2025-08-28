@@ -33,7 +33,7 @@ end
 # Unset irrelevant variables.
 deactivate nondestructive
 
-set -gx VIRTUAL_ENV /Users/rishubmadhav/Documents/sample2synth
+set -gx VIRTUAL_ENV /Users/rishubmadhav/Documents/sample2synth/sample2synth
 
 set -gx _OLD_VIRTUAL_PATH $PATH
 set -gx PATH "$VIRTUAL_ENV/"bin $PATH

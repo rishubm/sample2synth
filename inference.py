@@ -10,6 +10,20 @@ import soundfile as sf
 import matplotlib.pyplot as plt
 
 class SynthInference:
+    @staticmethod
+    def _clean_for_json(obj):
+        """Recursively replace NaN, Infinity, -Infinity with None for JSON serialization"""
+        import math
+        if isinstance(obj, dict):
+            return {k: SynthInference._clean_for_json(v) for k, v in obj.items()}
+        elif isinstance(obj, list):
+            return [SynthInference._clean_for_json(v) for v in obj]
+        elif isinstance(obj, float):
+            if math.isnan(obj) or math.isinf(obj):
+                return None
+            return obj
+        else:
+            return obj
     def __init__(self, model_dir="trained_models"):
         """Initialize inference system with trained models"""
         self.feature_extractor = AudioFeatureExtractor()
@@ -53,7 +67,7 @@ class SynthInference:
         if frequency is None and features is not None:
             detected_freq = features.get('f0_mean', 440.0)
             # Only use detected frequency if it's reasonable (not 0 or too extreme)
-            if 80 <= detected_freq <= 2000:  # Reasonable musical range
+            if 20 <= detected_freq <= 2000:  # Reasonable musical range
                 frequency = detected_freq
                 print(f"   Using detected frequency: {frequency:.1f} Hz")
             else:
@@ -155,12 +169,12 @@ class SynthInference:
         try:
             # Step 1: Analyze audio file
             features, predictions = self.analyze_audio_file(audio_path)
-            
+
             # Step 2: Generate synthesized audio (using detected frequency if not provided)
             synthesized_audio, synth_params, used_frequency = self.synthesize_from_predictions(
                 predictions, features, frequency, duration
             )
-            
+
             # Step 3: Save results
             results = {
                 'input_file': str(audio_path),
@@ -170,12 +184,15 @@ class SynthInference:
                 'extracted_features': features,
                 'analysis_timestamp': pd.Timestamp.now().isoformat()
             }
-            
+
+            # Clean results for JSON
+            results_clean = self._clean_for_json(results)
+
             # Save results as JSON
             results_path = output_path / f"analysis_{Path(audio_path).stem}.json"
             with open(results_path, 'w') as f:
-                json.dump(results, f, indent=2, default=str)
-            
+                json.dump(results_clean, f, indent=2, default=str)
+
             # Step 4: Compare with original
             synth_path, plot_path = self.compare_with_original(
                 audio_path, synthesized_audio, output_dir

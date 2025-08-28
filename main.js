@@ -108,7 +108,7 @@ ipcMain.handle('check-python-setup', async () => {
         }
 
         // Test Python execution
-        const testProcess = spawn('python', ['--version']);
+    const testProcess = spawn('/Users/rishubmadhav/Documents/sample2synth/sample2synth/bin/python', ['--version']);
         
         testProcess.on('close', (code) => {
             if (code === 0) {
@@ -143,7 +143,7 @@ ipcMain.handle('analyze-audio', async (event, audioFilePath) => {
         }
 
         // Run Python inference script
-        pythonProcess = spawn('python', [
+        pythonProcess = spawn('/Users/rishubmadhav/Documents/sample2synth/sample2synth/bin/python', [
             'inference.py',
             '--audio', audioFilePath,
             '--output_dir', outputDir
@@ -245,7 +245,7 @@ ipcMain.handle('run-training-pipeline', async () => {
                 message: step.name
             });
 
-            const process = spawn('python', [step.script]);
+            const process = spawn('/Users/rishubmadhav/Documents/sample2synth/sample2synth/bin/python', [step.script]);
 
             process.stdout.on('data', (data) => {
                 mainWindow.webContents.send('training-output', data.toString());
