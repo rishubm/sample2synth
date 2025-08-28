@@ -15,6 +15,13 @@ Sample2Synth is a tool that analyzes short audio samples and predicts synthesize
 3. **Synthesis:** Generates new audio using the predicted parameters and a built-in virtual analog synthesizer.
 4. **Comparison:** Optionally compares the original and synthesized audio for evaluation.
 
+## Future Goals
+
+- Expand the system to support FM (Frequency Modulation) and additive synthesis engines, enabling analysis and recreation of a wider range of sounds.
+- Improve prediction accuracy for transient-rich and ambient sounds, which are currently challenging for subtractive synthesis models.
+- Enhance the feature extraction pipeline to better capture subtle timbral and temporal characteristics.
+- Add a user-friendly interface for custom training and sound matching workflows.
+
 ## Demo
 https://github.com/user-attachments/assets/68b2f3e4-8955-4767-b525-56797e3fef46
 
