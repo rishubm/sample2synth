@@ -20,7 +20,7 @@ class SynthParams:
     # Envelope (ADSR)
     attack: float = 0.01   # seconds
     decay: float = 0.1     # seconds  
-    sustain: float = 0.7   # level (0-1)
+    sustain: float = 1.0  # level (0-1)
     release: float = 0.2   # seconds
     
     # General
@@ -178,76 +178,3 @@ class SubtractiveSynth:
         final_signal = filtered_signal * envelope * params.amplitude
         
         return final_signal
-
-# Example usage and testing
-if __name__ == "__main__":
-    # Create synthesizer
-    synth = SubtractiveSynth()
-    
-    # Test different sounds
-    test_params = [
-        SynthParams(osc_type='saw', filter_cutoff=2000, filter_resonance=1.0, attack=0.01, release=0.5),
-        SynthParams(osc_type='saw', filter_cutoff=2000, filter_resonance=5.0, attack=0.01, release=0.5),
-        SynthParams(osc_type='saw', filter_cutoff=2000, filter_resonance=20.0, attack=0.01, release=0.5),
-        SynthParams(osc_type='square', filter_cutoff=800, filter_resonance=3.0, filter_type='lowpass', attack=0.05, release=0.3),
-
-    ]
-    
-    # Generate some test notes
-    frequency = 440  # A4
-    duration = 2.0   # 2 seconds
-    
-    print("Generating test sounds...")
-    for i, params in enumerate(test_params):
-        print(f"Test {i+1}: {params.osc_type} oscillator, {params.filter_cutoff}Hz cutoff")
-        audio = synth.synthesize(frequency, duration, params)
-        
-        # Play the sound (comment out if you don't want audio playback)
-        sd.play(audio, synth.sample_rate)
-        sd.wait()  # Wait until sound finishes
-        
-        # Plot waveform
-        plt.figure(figsize=(12, 8))
-        t = np.linspace(0, duration, len(audio))
-        
-        # Full waveform (shows envelope)
-        plt.subplot(2, 2, 1)
-        plt.plot(t, audio)
-        plt.title(f'Full Waveform - Test {i+1} (Envelope Shape)')
-        plt.xlabel('Time (s)')
-        plt.ylabel('Amplitude')
-        
-        # Zoomed waveform (shows actual oscillations)
-        plt.subplot(2, 2, 2)
-        zoom_start = 0.6  # Start at 0.6 seconds (during sustain phase)
-        zoom_duration = 0.01  # Show 10ms (about 4-5 cycles at 440Hz)
-        zoom_start_idx = int(zoom_start * synth.sample_rate)
-        zoom_end_idx = int((zoom_start + zoom_duration) * synth.sample_rate)
-        t_zoom = t[zoom_start_idx:zoom_end_idx]
-        audio_zoom = audio[zoom_start_idx:zoom_end_idx]
-        plt.plot(t_zoom, audio_zoom)
-        plt.title(f'Zoomed Waveform - Test {i+1} (Actual Oscillations)')
-        plt.xlabel('Time (s)')
-        plt.ylabel('Amplitude')
-        
-        # Plot spectrum
-        plt.subplot(2, 2, 3)
-        freqs, spectrum = signal.welch(audio, synth.sample_rate, nperseg=1024)
-        plt.semilogy(freqs, spectrum)
-        plt.title(f'Spectrum - Test {i+1}')
-        plt.xlabel('Frequency (Hz)')
-        plt.ylabel('Power')
-        plt.xlim(0, 5000)
-        
-        # Show envelope separately
-        plt.subplot(2, 2, 4)
-        envelope = synth.generate_envelope(duration, params.attack, params.decay, params.sustain, params.release)
-        plt.plot(t, envelope)
-        plt.title(f'ADSR Envelope - Test {i+1}')
-        plt.xlabel('Time (s)')
-        plt.ylabel('Envelope Level')
-        
-        plt.tight_layout()
-        plt.show()
-    
-    print("Synthesizer test complete!")
